@@ -36,7 +36,7 @@ const MongoDBStore = require("connect-mongo")(session);
 // mongoose naal connect krn daa below method is the latest
 const mongoose = require('mongoose');
 const { name } = require('ejs');
-const dbUrl = 'mongodb://localhost:27017/yelp-camp';
+const dbUrl = process.env.DB_URL || 'mongodb://localhost:27017/yelp-camp';
 mongoose.connect(dbUrl)
     .then(() => {
         console.log("MONGO CONNECTION OPEN!!!")
@@ -45,6 +45,12 @@ mongoose.connect(dbUrl)
         console.log("Error, MONGO CONNECTION!!!!")
         console.log(err)
     })
+
+    const db = mongoose.connection;
+    db.on("error", console.error.bind(console, "connection error:"));
+    db.once("open", () => {
+        console.log("Database connected");
+    });
 
 
 const app = express();
